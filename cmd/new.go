@@ -28,6 +28,12 @@ note. This command requires exactly one argument - the name of the file.`,
 		}
 		zettkDir := filepath.Join(homeDir, "zettlekasten")
 		
+		// Get the template
+		template, err := cmd.Flags().GetString("template")
+		if err != nil { return err }
+		tFile := os.ReadFile(filepath.Join(zettkDir, "templates", template))
+		if err != nil { fmt.Println(err) }
+
 		// Create the markdown file
 		fName := filepath.Join(zettkDir, fmt.Sprintf("%s.md", filepath.Clean(args[0]))) // Expected value is "path/to/zettk/my-name.md"
 		file, err := os.Create(fName)
@@ -35,22 +41,28 @@ note. This command requires exactly one argument - the name of the file.`,
 			fmt.Println("Failed to create markdown file", err)
 		}
 		defer file.Close()
+		_, err := file.WriteString(fmt.Sprintf(tFile, filepath.Clean(args[0]), time.Now().Format("2006-01-02"))) //TODO: Does this actually parse the vars correctly?
+		file.Close()
 
-		// See if the daily note exists
-		// If not, create the daily note
-		dailyNote := filepath.Join(zettkDir, "daily-notes", fmt.Sprintf("%s.md", time.Now().Format("2006-01-02")))
-
-		// TODO: Implement the creation of the daily note
-
-		// Inject the markdown into the daily note
-		// TODO: Find a markdown library for this
+		// Add the new note to the daily note
+		// If the daily note doesn't exist, create it
+		dNote := filepath.Join(zettkDir, "daily-notes", fmt.Sprintf("%s.md", time.Now().Format("2006-01-02")))
+		dFile, err := os.OpenFile(dNote, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+		if err != nil {
+			fmt.Println("Failed to create daily note")
+		}
+		defer dFile.Close()
+		var link string = "\n[[" + fmt.Sprintf("%s.md", time.Now().Format("2006-01-02")) + "]]"
+		_, err := dFile.WriteString(link)
+		if err != nil {
+			fmt.Println(err)
+		}
+		dFile.Close()
 
 		// Run neovim to open the note
 		exec.Command("nvim", fName)
 
 		// Use this for testing
-		fmt.Println("File successfully created!")
-		fmt.Println(dailyNote)
 	},
 }
 
@@ -58,7 +70,7 @@ func init() {
 	rootCmd.AddCommand(newCmd)
 
 	// Here you will define your flags and configuration settings.
-	newCmd.Flags().StringP("template", "t", "standard.md", "Specify custom note template")
+	newCmd.Flags().StringP("template", "t", "default.md", "Specify custom note template")
 
 	// Cobra supports Persistent Flags which will work for this command
 	// and all subcommands, e.g.:
