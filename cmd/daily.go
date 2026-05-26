@@ -5,35 +5,49 @@ package cmd
 
 import (
 	"fmt"
-
+	"time"
+	"os"
+	"os/exec"
+	"path/filepath"
 	"github.com/spf13/cobra"
 )
 
 // dailyCmd represents the daily command
 var dailyCmd = &cobra.Command{
 	Use:   "daily",
-	Short: "Opens the daily markdown note, or creates it if it doesn't exist",
-	Long: `A longer description that spans multiple lines and likely contains examples
-and usage of using your command. For example:
-
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
+	Short: "Open the daily note",
+	Long: `Opens the daily note located in the daily-notes directory.
+If the daily note doesn't yet exist, it will automatically
+create it.`,
+	Args: cobra.ExactArgs(0), // Temp fix until we can solve cobra.NoArgs
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("daily called")
+		// Find the Zettlekasten direcory
+		homeDir, err := os.UserHomeDir()
+		if err != nil {
+			fmt.Println("Failed to find user home directory")
+		}
+		zettkDir := filepath.Join(homeDir, "zettlekasten")
+
+		// Create the daily note
+		dNote := filepath.Join(zettkDir, "daily-notes", fmt.Sprintf("%s.md", time.Now().Format("2006-01-02")))
+		dFile, err := os.OpenFile(dNote, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+		if err != nil {
+			fmt.Println("Failed to create daily note")
+		}
+		defer dFile.Close()
+		dFile.Close()
+
+		// Run neovim to open the note
+    		nvim := exec.Command("nvim", dNote)
+		nvim.Stdin = os.Stdin
+		nvim.Stdout = os.Stdout
+		nvim.Stderr = os.Stderr
+		nvim.Run()
+
 	},
 }
 
 func init() {
 	rootCmd.AddCommand(dailyCmd)
 
-	// Here you will define your flags and configuration settings.
-
-	// Cobra supports Persistent Flags which will work for this command
-	// and all subcommands, e.g.:
-	// dailyCmd.PersistentFlags().String("foo", "", "A help for foo")
-
-	// Cobra supports local flags which will only run when this command
-	// is called directly, e.g.:
-	// dailyCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 }

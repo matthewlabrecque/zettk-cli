@@ -1,11 +1,13 @@
 /*
-Copyright © 2026 NAME HERE <EMAIL ADDRESS>
+Copyright © 2026 Matthew Labrecque <mlabrecque2002@gmail.com> 
 */
 package cmd
 
 import (
 	"fmt"
-
+	"os"
+	"os/exec"
+	"path/filepath"
 	"github.com/spf13/cobra"
 )
 
@@ -13,27 +15,35 @@ import (
 var scratchpadCmd = &cobra.Command{
 	Use:   "scratchpad",
 	Short: "Open the scratchpad note for quick notes",
-	Long: `A longer description that spans multiple lines and likely contains examples
-and usage of using your command. For example:
-
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
+	Long: `Open a dedicated scratchpad file for jotting down quick notes.
+If the scratchpad doesn't exist, it will automatically create it in
+the scratchpad directory.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("scratchpad called")
+		// Find the Zettlekasten direcory
+		homeDir, err := os.UserHomeDir()
+		if err != nil {
+			fmt.Println("Failed to find user home directory")
+		}
+		zettkDir := filepath.Join(homeDir, "zettlekasten")
+
+		// Add the new note to the daily note
+		spPath := filepath.Join(zettkDir, "scratchpad", "scratchpad.md")
+		spFile, err := os.OpenFile(spPath, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+		if err != nil {
+			fmt.Println("Failed to find or create the scratchpad")
+		}
+		spFile.Close()
+
+		// Run neovim to open the note
+    		nvim := exec.Command("nvim", spPath)
+		nvim.Stdin = os.Stdin
+		nvim.Stdout = os.Stdout
+		nvim.Stderr = os.Stderr
+		nvim.Run()
 	},
 }
 
 func init() {
 	rootCmd.AddCommand(scratchpadCmd)
 
-	// Here you will define your flags and configuration settings.
-
-	// Cobra supports Persistent Flags which will work for this command
-	// and all subcommands, e.g.:
-	// scratchpadCmd.PersistentFlags().String("foo", "", "A help for foo")
-
-	// Cobra supports local flags which will only run when this command
-	// is called directly, e.g.:
-	// scratchpadCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 }
