@@ -13,7 +13,7 @@ import (
 
 // scratchpadCmd represents the scratchpad command
 var scratchpadCmd = &cobra.Command{
-	Use:   "scratchpad",
+	Use:   "sp",
 	Short: "Open the scratchpad note for quick notes",
 	Long: `Open a dedicated scratchpad file for jotting down quick notes.
 If the scratchpad doesn't exist, it will automatically create it in

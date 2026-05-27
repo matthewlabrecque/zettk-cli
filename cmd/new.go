@@ -54,7 +54,7 @@ note. This command requires exactly one argument - the name of the file.`,
 			fmt.Println("Failed to create daily note")
 		}
 		defer dFile.Close()
-		link := "\n[[" + fmt.Sprintf("%s.md", filepath.Clean(args[0])) + "]]"
+		link := "[[" + fmt.Sprintf("%s.md", filepath.Clean(args[0])) + "]]"
 		_, err = dFile.WriteString(link)
 		if err != nil {
 			fmt.Println(err)
