@@ -31,11 +31,16 @@ note. This command requires exactly one argument - the name of the file.`,
 		// Get the template
 		tVal, err := cmd.Flags().GetString("template")
 		if err != nil { fmt.Println(err) }
-		template, err := os.ReadFile(filepath.Join(zettkDir, "templates", tVal))
+		template, err := os.ReadFile(filepath.Join(zettkDir, "templates", tVal+".md"))
 		if err != nil { fmt.Println(err) }
 
 		// Create the markdown file
-		fName := filepath.Join(zettkDir, fmt.Sprintf("%s.md", filepath.Clean(args[0]))) // Expected value is "path/to/zettk/my-name.md"
+		currTime := time.Now().Format("200601021504")
+		fName := filepath.Join(zettkDir, "00-INBOX", fmt.Sprintf("%s-%s.md", currTime, filepath.Clean(args[0])))
+		if tVal == "reference" {
+			fName = filepath.Join(zettkDir, "02-REFERENCES", fmt.Sprintf("%s-%s.md", currTime, filepath.Clean(args[0])))
+		}
+		 // Expected value is "path/to/zettk/my-name.md"
 		file, err := os.Create(fName)
 		if err != nil {
 			fmt.Println("Failed to create markdown file", err)
@@ -48,13 +53,13 @@ note. This command requires exactly one argument - the name of the file.`,
 		file.Close()
 
 		// Add the new note to the daily note
-		dNote := filepath.Join(zettkDir, "daily-notes", fmt.Sprintf("%s.md", time.Now().Format("2006-01-02")))
+		dNote := filepath.Join(zettkDir, "01-ARCHIVE", "daily-notes", fmt.Sprintf("%s.md", time.Now().Format("2006-01-02")))
 		dFile, err := os.OpenFile(dNote, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
 		if err != nil {
 			fmt.Println("Failed to create daily note")
 		}
 		defer dFile.Close()
-		link := "[[" + fmt.Sprintf("%s.md", filepath.Clean(args[0])) + "]]"
+		link := "\n[[" + fmt.Sprintf("%s.md", filepath.Clean(args[0])) + "]]"
 		_, err = dFile.WriteString(link)
 		if err != nil {
 			fmt.Println(err)
@@ -62,11 +67,11 @@ note. This command requires exactly one argument - the name of the file.`,
 		dFile.Close()
 
 		// Run neovim to open the note
-    		nvim := exec.Command("nvim", fName)
-		nvim.Stdin = os.Stdin
-		nvim.Stdout = os.Stdout
-		nvim.Stderr = os.Stderr
-		nvim.Run()
+    	editor := exec.Command(os.Getenv("EDITOR"), fName)
+		editor.Stdin = os.Stdin
+		editor.Stdout = os.Stdout
+		editor.Stderr = os.Stderr
+		editor.Run()
 	},
 }
 
@@ -74,5 +79,5 @@ func init() {
 	rootCmd.AddCommand(newCmd)
 
 	// Flag to allow custom template spec
-	newCmd.Flags().StringP("template", "t", "note.md", "Specify custom note template")
+	newCmd.Flags().StringP("template", "t", "note", "Specify custom note template")
 }

@@ -1,5 +1,5 @@
 /*
-Copyright © 2026 NAME HERE <EMAIL ADDRESS>
+Copyright © 2026 Matthew Labrecque <mlabrecque2002@gmail.com> 
 */
 package cmd
 
@@ -29,7 +29,7 @@ create it.`,
 		zettkDir := filepath.Join(homeDir, "zettlekasten")
 
 		// Create the daily note
-		dNote := filepath.Join(zettkDir, "daily-notes", fmt.Sprintf("%s.md", time.Now().Format("2006-01-02")))
+		dNote := filepath.Join(zettkDir, "01-ARCHIVE", "daily-notes", fmt.Sprintf("%s.md", time.Now().Format("2006-01-02")))
 		dFile, err := os.OpenFile(dNote, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
 		if err != nil {
 			fmt.Println("Failed to create daily note")
@@ -38,11 +38,11 @@ create it.`,
 		dFile.Close()
 
 		// Run neovim to open the note
-    		nvim := exec.Command("nvim", dNote)
-		nvim.Stdin = os.Stdin
-		nvim.Stdout = os.Stdout
-		nvim.Stderr = os.Stderr
-		nvim.Run()
+    	editor := exec.Command(os.Getenv("EDITOR"), dNote)
+		editor.Stdin = os.Stdin
+		editor.Stdout = os.Stdout
+		editor.Stderr = os.Stderr
+		editor.Run()
 
 	},
 }

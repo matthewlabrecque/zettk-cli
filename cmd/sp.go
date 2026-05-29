@@ -35,11 +35,11 @@ the scratchpad directory.`,
 		spFile.Close()
 
 		// Run neovim to open the note
-    		nvim := exec.Command("nvim", spPath)
-		nvim.Stdin = os.Stdin
-		nvim.Stdout = os.Stdout
-		nvim.Stderr = os.Stderr
-		nvim.Run()
+   		editor := exec.Command(os.Getenv("EDITOR"), spPath)
+		editor.Stdin = os.Stdin
+		editor.Stdout = os.Stdout
+		editor.Stderr = os.Stderr
+		editor.Run()
 	},
 }
 
