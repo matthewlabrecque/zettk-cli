@@ -1,0 +1,128 @@
+/*
+Copyright © 2026 Matthew Labrecque <mlabrecque2002@gmail.com>
+*/
+package cmd
+
+import (
+	"fmt"
+	"strings"
+	"slices"
+	"os"
+	"path/filepath"
+	"regexp"
+	"github.com/spf13/cobra"
+)
+
+var findCmd = &cobra.Command{
+	Use:   "find [args]",
+	Short: "Search through the zettlekasten",
+	Long: `Search through the zettlekasten for a file provided by the argument.
+Returns the file name, zettlekasten ID, date created, and date
+last modified.`,
+	Args: cobra.ExactArgs(1),
+	Run: func(cmd *cobra.Command, args []string) {
+		homeDir, err := os.UserHomeDir()
+		if err != nil {
+			fmt.Println("Failed to find user home directory")
+		}
+
+		searchQuerry := filepath.Clean(args[0])
+
+		directories := []string{"00-INBOX", "01-ARCHIVE", "02-REFERENCES"}
+		inbox, err := cmd.Flags().GetBool("inbox")
+		if err != nil { fmt.Println(err) }
+		reference, err := cmd.Flags().GetBool("reference")
+		if err != nil { fmt.Println(err) }
+		archive, err := cmd.Flags().GetBool("archive")
+		if err != nil { fmt.Println(err) }
+
+		// Note that the slice indexes are being updated dynamically
+		if inbox {
+			directories = slices.Delete(directories, 1, 3)
+		} else if reference {
+			directories = slices.Delete(directories, 0, 1)
+			directories = slices.Delete(directories, 1, 2)
+		} else if archive {
+			directories = slices.Delete(directories, 0, 1)
+			directories = slices.Delete(directories, 0, 1)
+		}
+
+		// Walk through all the directories
+		var foundFiles []string = make([]string, 0, 10)
+		targetRegexp := regexp.MustCompile(".*" + searchQuerry + ".*")
+		for _, dir := range directories {
+			files, err := os.ReadDir(filepath.Join(homeDir, "zettlekasten", dir))
+			if err != nil {fmt.Println(err)}
+			for _, file := range files {
+				if targetRegexp.MatchString(file.Name()) {
+					// Note we have to add the dir for file path construction
+					// later on
+					foundFiles = append(foundFiles, dir + "/" + file.Name())
+				}
+			}
+		}
+
+		// Determine if additional querry is needed
+		var foundFile string = ""
+		if len(foundFiles) == 0 {
+			fmt.Println("Found 0 notes matching search querry:", searchQuerry)
+			return
+		} else if len(foundFiles) > 1 {
+			var ans int
+			fmt.Println(fmt.Sprintf("Multiple files matching search term \"%s\" found.", searchQuerry))
+			for i:= 0; i < len(foundFiles); i++ {
+				fmt.Println(fmt.Sprintf("  %d) %s", i, foundFiles[i]))
+			}
+			fmt.Println()
+			fmt.Print(fmt.Sprintf("Which file do you want? [0-%d] ", len(foundFiles)-1))
+			fmt.Scan(&ans)
+			for (ans < 0 || ans >= len(foundFiles)) {
+				fmt.Println("Please select from within the valid options.")
+				fmt.Println()
+				fmt.Print(fmt.Sprintf("Which file do you want? [0-%d] ", len(foundFiles)-1))
+				fmt.Scanf("%d", &ans)
+			}
+			foundFile = foundFiles[ans]
+		} else {
+			foundFile = foundFiles[0]
+		}
+
+		// Reconstruct the file path
+		fullPath, err := os.Stat(filepath.Join(homeDir, "zettlekasten", foundFile))
+		if err != nil {fmt.Println(err)}
+
+		// Get all info about the file (note we have to do some additional
+		// processing here)
+		split := strings.SplitN(foundFile, "/", 2)
+		split2 := strings.SplitN(split[1], "-", 2)
+		fileName := split2[1]
+		zettkID := split2[0]
+		location := split[0]
+		cTime := cTime(split2[0])
+		mTime := fullPath.ModTime().Format("2006-01-02 15:04")
+
+		// Display information about the file
+		fmt.Println(fmt.Sprintf("Info about %s\n ZettkID: %s\n Location: %s\n Creation Time: %s\n Last Modified: %s", fileName, zettkID, location, cTime, mTime))
+	},
+}
+
+// I hate how these are hard-coded, but probably fine since the date format
+// does not change and is auto-generated
+func cTime(ctime string) string {
+	s := ctime
+	yIndex := 4
+	mIndex := 6
+	dtSplit := 8
+	timeIndex := 10
+	hrIndex := 12
+	formattedTime := s[:yIndex] + "-" + s[yIndex:mIndex] + "-" + s[mIndex:dtSplit] + " " + s[dtSplit:timeIndex] + ":" + s[timeIndex:hrIndex]
+	return formattedTime
+}
+
+func init() {
+	rootCmd.AddCommand(findCmd)
+	findCmd.Flags().Bool("reference", false, "Search only the reference folder")
+	findCmd.Flags().Bool("archive", false, "Search only the archive folder")
+	findCmd.Flags().Bool("inbox", false, "Search only the inbox folder")
+	findCmd.MarkFlagsMutuallyExclusive("reference", "archive", "inbox")
+}
