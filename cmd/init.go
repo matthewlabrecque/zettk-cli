@@ -15,10 +15,10 @@ import (
 // initCmd represents the init command
 var initCmd = &cobra.Command{
 	Use:   "init",
-	Short: "Initalize a Zettlekasten",
-	Long: `Initalize a new Zettlekasten with subdirectories. The Zettlekasten
+	Short: "Initalize a Zettelkasten",
+	Long: `Initalize a new Zettelkasten with subdirectories. The Zettelkasten
 is provided in as "vanilla" a form as possible, considering the
-logistics of digital databases. Note that if a Zettlekasten exists
+logistics of digital databases. Note that if a Zettelkasten exists
 at the supplied location, it will ask for permission before overwriting.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		
@@ -27,9 +27,9 @@ at the supplied location, it will ask for permission before overwriting.`,
 		if err != nil {
 			fmt.Println("Failed to find user home directory")
 		}
-		baseDir := filepath.Join(homeDir, "zettlekasten")
+		baseDir := filepath.Join(homeDir, "zettelkasten")
 
-		// Check if a Zettlekasten already exists at the given location
+		// Check if a Zettelkasten already exists at the given location
 		// If it does exist, prompt the user
 		if _, err := os.Stat(baseDir); !os.IsNotExist(err) {
 			var ans string = "N"
@@ -46,7 +46,7 @@ at the supplied location, it will ask for permission before overwriting.`,
 			}
    		}
 
-		zettDirs := []string{"00-INBOX", "01-ARCHIVE", "02-REFERENCES", "01-ARCHIVE/daily-notes", "templates"}
+		zettDirs := []string{"00-INBOX", "01-ARCHIVE", "02-INPUT", "01-ARCHIVE/daily-notes", "templates"}
 
 		// Create the folder structure
 		for _, zettDir := range zettDirs {

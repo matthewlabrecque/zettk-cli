@@ -29,13 +29,13 @@ file you want to open.`,
 
 		searchQuerry := filepath.Clean(args[0])
 
-		directories := []string{"00-INBOX", "01-ARCHIVE", "02-REFERENCES"}
+		directories := []string{"00-INBOX", "01-ARCHIVE", "02-INPUT"}
 
 		// Walk through all the directories
 		var foundFiles []string = make([]string, 0, 10)
 		targetRegexp := regexp.MustCompile(".*" + searchQuerry + ".*")
 		for _, dir := range directories {
-			files, err := os.ReadDir(filepath.Join(homeDir, "zettlekasten", dir))
+			files, err := os.ReadDir(filepath.Join(homeDir, "zettelkasten", dir))
 			if err != nil {fmt.Println(err)}
 			for _, file := range files {
 				if targetRegexp.MatchString(file.Name()) {
@@ -72,7 +72,7 @@ file you want to open.`,
 		}
 
 		// Reconstruct the file path
-		fullPath := filepath.Join(homeDir, "zettlekasten", foundFile)
+		fullPath := filepath.Join(homeDir, "zettelkasten", foundFile)
 
 		// Run neovim to open the note
     	editor := exec.Command(os.Getenv("EDITOR"), fullPath)

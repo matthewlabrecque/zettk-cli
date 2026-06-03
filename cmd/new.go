@@ -15,18 +15,18 @@ import (
 // newCmd represents the new command
 var newCmd = &cobra.Command{
 	Use:   "new [title]",
-	Short: "Create a new note and update the zettlekasten.",
+	Short: "Create a new note and update the zettelkasten.",
 	Long: `Creates a new markdown note and adds it to the daily note for the
 current day. If the daily note doesn't yet exist, it creates the daily
 note. This command requires exactly one argument - the name of the file.`,
 	Args: cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
-		// Find the Zettlekasten direcory
+		// Find the Zettelkasten direcory
 		homeDir, err := os.UserHomeDir()
 		if err != nil {
 			fmt.Println("Failed to find user home directory")
 		}
-		zettkDir := filepath.Join(homeDir, "zettlekasten")
+		zettkDir := filepath.Join(homeDir, "zettelkasten")
 		
 		// Get the template
 		tVal, err := cmd.Flags().GetString("template")
@@ -37,8 +37,8 @@ note. This command requires exactly one argument - the name of the file.`,
 		// Create the markdown file
 		currTime := time.Now().Format("200601021504")
 		fName := filepath.Join(zettkDir, "00-INBOX", fmt.Sprintf("%s-%s.md", currTime, filepath.Clean(args[0])))
-		if tVal == "reference" {
-			fName = filepath.Join(zettkDir, "02-REFERENCES", fmt.Sprintf("%s-%s.md", currTime, filepath.Clean(args[0])))
+		if tVal == "input" {
+			fName = filepath.Join(zettkDir, "02-INPUT", fmt.Sprintf("%s-%s.md", currTime, filepath.Clean(args[0])))
 		}
 		 // Expected value is "path/to/zettk/my-name.md"
 		file, err := os.Create(fName)

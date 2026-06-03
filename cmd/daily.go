@@ -26,7 +26,7 @@ create it.`,
 		if err != nil {
 			fmt.Println("Failed to find user home directory")
 		}
-		zettkDir := filepath.Join(homeDir, "zettlekasten")
+		zettkDir := filepath.Join(homeDir, "zettelkasten")
 
 		// Create the daily note
 		dNote := filepath.Join(zettkDir, "01-ARCHIVE", "daily-notes", fmt.Sprintf("%s.md", time.Now().Format("2006-01-02")))

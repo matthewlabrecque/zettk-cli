@@ -11,8 +11,8 @@ import (
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
 	Use:   "zettk-cli",
-	Short: "A KISS CLI interface for a Zettlekasten note taking system",
-	Long: `Zettk-CLI is a CLI for a Zettlekasten note taking system
+	Short: "A KISS CLI interface for a Zettelkasten note taking system",
+	Long: `Zettk-CLI is a CLI for a Zettelkasten note taking system
 utilizing the markdown format. Zettk is designed to be easily 
 customizable and modifiable, serving as a core for your
 note taking system.`,

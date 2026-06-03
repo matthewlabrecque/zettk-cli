@@ -19,12 +19,12 @@ var scratchpadCmd = &cobra.Command{
 If the scratchpad doesn't exist, it will automatically create it in
 the scratchpad directory.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		// Find the Zettlekasten direcory
+		// Find the Zettelkasten direcory
 		homeDir, err := os.UserHomeDir()
 		if err != nil {
 			fmt.Println("Failed to find user home directory")
 		}
-		zettkDir := filepath.Join(homeDir, "zettlekasten")
+		zettkDir := filepath.Join(homeDir, "zettelkasten")
 
 		// Add the new note to the daily note
 		spPath := filepath.Join(zettkDir, "scratchpad", "scratchpad.md")

@@ -15,9 +15,9 @@ import (
 
 var findCmd = &cobra.Command{
 	Use:   "find [args]",
-	Short: "Search through the zettlekasten",
-	Long: `Search through the zettlekasten for a file provided by the argument.
-Returns the file name, zettlekasten ID, date created, and date
+	Short: "Search through the zettelkasten",
+	Long: `Search through the zettelkasten for a file provided by the argument.
+Returns the file name, zettelkasten ID, date created, and date
 last modified.`,
 	Args: cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
@@ -28,10 +28,10 @@ last modified.`,
 
 		searchQuerry := filepath.Clean(args[0])
 
-		directories := []string{"00-INBOX", "01-ARCHIVE", "02-REFERENCES"}
+		directories := []string{"00-INBOX", "01-ARCHIVE", "02-INPUT"}
 		inbox, err := cmd.Flags().GetBool("inbox")
 		if err != nil { fmt.Println(err) }
-		reference, err := cmd.Flags().GetBool("reference")
+		input, err := cmd.Flags().GetBool("input")
 		if err != nil { fmt.Println(err) }
 		archive, err := cmd.Flags().GetBool("archive")
 		if err != nil { fmt.Println(err) }
@@ -39,7 +39,7 @@ last modified.`,
 		// Note that the slice indexes are being updated dynamically
 		if inbox {
 			directories = slices.Delete(directories, 1, 3)
-		} else if reference {
+		} else if input {
 			directories = slices.Delete(directories, 0, 1)
 			directories = slices.Delete(directories, 1, 2)
 		} else if archive {
@@ -51,7 +51,7 @@ last modified.`,
 		var foundFiles []string = make([]string, 0, 10)
 		targetRegexp := regexp.MustCompile(".*" + searchQuerry + ".*")
 		for _, dir := range directories {
-			files, err := os.ReadDir(filepath.Join(homeDir, "zettlekasten", dir))
+			files, err := os.ReadDir(filepath.Join(homeDir, "zettelkasten", dir))
 			if err != nil {fmt.Println(err)}
 			for _, file := range files {
 				if targetRegexp.MatchString(file.Name()) {
@@ -88,7 +88,7 @@ last modified.`,
 		}
 
 		// Reconstruct the file path
-		fullPath, err := os.Stat(filepath.Join(homeDir, "zettlekasten", foundFile))
+		fullPath, err := os.Stat(filepath.Join(homeDir, "zettelkasten", foundFile))
 		if err != nil {fmt.Println(err)}
 
 		// Get all info about the file (note we have to do some additional
@@ -121,8 +121,8 @@ func cTime(ctime string) string {
 
 func init() {
 	rootCmd.AddCommand(findCmd)
-	findCmd.Flags().Bool("reference", false, "Search only the reference folder")
+	findCmd.Flags().Bool("input", false, "Search only the input folder")
 	findCmd.Flags().Bool("archive", false, "Search only the archive folder")
 	findCmd.Flags().Bool("inbox", false, "Search only the inbox folder")
-	findCmd.MarkFlagsMutuallyExclusive("reference", "archive", "inbox")
+	findCmd.MarkFlagsMutuallyExclusive("input", "archive", "inbox")
 }
