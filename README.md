@@ -74,7 +74,7 @@ Searches `00-INBOX`, `01-ARCHIVE`, and `02-INPUT` for filenames matching the que
 
 ### `find [search]`
 
-Search for a note and display its metadata.
+Search for a note and display its metadata. Uses a fuzzy-search algorithm to locate the note.
 
 ```sh
 zettk-cli find my-idea
@@ -126,7 +126,7 @@ Opens (or creates) the daily note at `~/zettelkasten/01-ARCHIVE/daily-notes/YYYY
 ### Build locally
 
 ```sh
-git clone <repository-url>
+git clone https://codeberg.org/matthewlabrecque/zettk-cli
 cd zettk
 go build
 ```
@@ -140,6 +140,14 @@ go install
 ```
 
 Ensure `$GOPATH/bin` (or `$HOME/go/bin`) is in your `PATH` to run `zettk-cli` from anywhere.
+
+### Personal Tweaks I use
+I have a couple aliases that I added to my ZSH config for Zettk-CLI
+```
+alias zettk="zettk-cli"
+alias zk="zettk-cli"
+alias cdzk="cd /home/mlab/Zettelkasten"
+```
 
 ## License
 
