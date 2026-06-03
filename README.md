@@ -152,3 +152,6 @@ alias cdzk="cd /home/mlab/Zettelkasten"
 ## License
 
 MIT © 2026 Matthew Labrecque
+
+## AI Disclosure
+The only file which was generated using Large Language Models was this README. All code was written without the use/assistance of AI/LLM models.
