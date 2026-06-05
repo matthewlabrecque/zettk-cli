@@ -54,7 +54,7 @@ last modified.`,
 			files, err := os.ReadDir(filepath.Join(homeDir, "zettelkasten", dir))
 			if err != nil {fmt.Println(err)}
 			for _, file := range files {
-				if targetRegexp.MatchString(file.Name()) {
+				if !file.IsDir() && targetRegexp.MatchString(file.Name()) {
 					// Note we have to add the dir for file path construction
 					// later on
 					foundFiles = append(foundFiles, dir + "/" + file.Name())
