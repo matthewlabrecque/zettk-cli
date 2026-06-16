@@ -27,7 +27,7 @@ the scratchpad directory.`,
 		zettkDir := filepath.Join(homeDir, "zettelkasten")
 
 		// Add the new note to the daily note
-		spPath := filepath.Join(zettkDir, "scratchpad", "scratchpad.md")
+		spPath := filepath.Join(zettkDir, "PRIVATE", "scratchpad.md")
 		spFile, err := os.OpenFile(spPath, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
 		if err != nil {
 			fmt.Println("Failed to find or create the scratchpad")

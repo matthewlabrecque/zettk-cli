@@ -29,7 +29,7 @@ file you want to open.`,
 
 		searchQuerry := filepath.Clean(args[0])
 
-		directories := []string{"00-INBOX", "01-ARCHIVE", "02-INPUT"}
+		directories := []string{"INBOX", "ARCHIVE", "INPUT", "PROJECTS", "PRIVATE"}
 
 		// Walk through all the directories
 		var foundFiles []string = make([]string, 0, 10)

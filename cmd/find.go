@@ -28,7 +28,7 @@ last modified.`,
 
 		searchQuerry := filepath.Clean(args[0])
 
-		directories := []string{"00-INBOX", "01-ARCHIVE", "02-INPUT"}
+		directories := []string{"INBOX", "ARCHIVE", "INPUT"}
 		inbox, err := cmd.Flags().GetBool("inbox")
 		if err != nil { fmt.Println(err) }
 		input, err := cmd.Flags().GetBool("input")

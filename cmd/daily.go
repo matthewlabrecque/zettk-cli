@@ -29,7 +29,7 @@ create it.`,
 		zettkDir := filepath.Join(homeDir, "zettelkasten")
 
 		// Create the daily note
-		dNote := filepath.Join(zettkDir, "01-ARCHIVE", "daily-notes", fmt.Sprintf("%s.md", time.Now().Format("2006-01-02")))
+		dNote := filepath.Join(zettkDir, "ARCHIVE", "daily-notes", fmt.Sprintf("%s.md", time.Now().Format("2006-01-02")))
 		dFile, err := os.OpenFile(dNote, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
 		if err != nil {
 			fmt.Println("Failed to create daily note")

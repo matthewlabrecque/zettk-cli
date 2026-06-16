@@ -46,7 +46,7 @@ at the supplied location, it will ask for permission before overwriting.`,
 			}
    		}
 
-		zettDirs := []string{"00-INBOX", "01-ARCHIVE", "02-INPUT", "01-ARCHIVE/daily-notes", "templates"}
+		zettDirs := []string{"INBOX", "ARCHIVE", "INPUT", "ARCHIVE/daily-notes", "templates"}
 
 		// Create the folder structure
 		for _, zettDir := range zettDirs {
